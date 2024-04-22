@@ -25,7 +25,10 @@ const student = Schema({
         type: Date,
         required: true
     },
-    major: Number,
+    major: {
+        type: Schema.Types.ObjectId,
+        ref: 'Major',
+    },
     password: String,
     status: {
         type: Boolean,

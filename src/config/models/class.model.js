@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const clazz =  Schema({
     // Mã lớp học (Class ID)
     // Mã môn học (Course ID)
+    // Mã ngành (Major ID)
     // Giảng viên (Instructor)
     // Số sinh viên tối đa (Max Students)
     // Số sinh viên đã đăng ký (Registered Students)
@@ -19,8 +20,8 @@ const clazz =  Schema({
         ref: 'Course',
     },
     major: {
-        type: Number,
-        required: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Major',
     },
     instructor: {
         type: String,
@@ -30,9 +31,11 @@ const clazz =  Schema({
         type: Number,
         required: true,
     },
+    waitingStudents: {
+        type: Array
+    },
     registeredStudents: {
-        type: Number,
-        required: true,
+        type: Array,
     },
     classSchedule: {
         type: 
@@ -59,6 +62,10 @@ const clazz =  Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: Boolean,
+        required: true,
+    }
 }, 
     {
     timestamps: true,

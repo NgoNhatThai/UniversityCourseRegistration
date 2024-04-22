@@ -17,8 +17,8 @@ const course =  Schema({
         required: true,
     },
     prerequisiteCourse: {
-        type: Schema.Types.ObjectId,
-        ref: 'Course',
+        type: Array,
+        default: null,
     },
     status: {
         type: Boolean,
