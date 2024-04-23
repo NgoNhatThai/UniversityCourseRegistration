@@ -1,5 +1,6 @@
 import courseService from '../services/course.service';
 
+
 const addCourse = async (req, res) => {
     const {courseId, name, credit, prerequisiteCourse} = req.body;
     if(!courseId || !name || !credit || !prerequisiteCourse)
@@ -83,6 +84,18 @@ const acceptStudentToClass = async (req, res) => {
         next(error);
     }
 }
+
+const finishCourse = async (req, res) => {
+    const {classId, studentId} = req.body;
+    if(!classId || !studentId)
+        return res.status(400).json({errCode: 1, message: 'Missing required fields'});
+    try {
+        const response = await courseService.finishCourse(classId, studentId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports = {
     addCourse,
     getAllCourses,
@@ -90,5 +103,6 @@ module.exports = {
     addClass,
     getClassByMajor,
     registerClass,
-    acceptStudentToClass
+    acceptStudentToClass,
+    finishCourse,
 }

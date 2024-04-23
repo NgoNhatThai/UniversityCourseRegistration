@@ -1,6 +1,7 @@
 const Course = require("../config/models/course.model");
 const Major = require("../config/models/major.model");
 const Class = require("../config/models/class.model");
+const StudyStatus = require("../config/models/study_status.model");
 import mongoose from 'mongoose';
 
 const addCourse = async (courseId, name, credit, prerequisiteCourse) => {
@@ -176,41 +177,53 @@ const registerClass = async (classId, studentId) => {
                 errCode: 2,
                 message: 'Class is not exists'
             }
-        const registeredStudents = clazz.registeredStudents;
-        const waitingStudents = clazz.waitingStudents;
-        if (registeredStudents.includes(studentId))
-            return {
-                errCode: 3,
-                message: 'Student is already registered'
-            }
-        else if (waitingStudents.includes(studentId))
-            return {
-                errCode: 4,
-                message: 'Student is already in waiting list'
-            }
-        else
-        if (registeredStudents.length >= clazz.maxStudents) {
-            return {
-                errCode: 3,
-                message: 'Class is full'
-            }
-        }
-        else {
-            clazz.waitingStudents.push(studentId);
-            const result = await clazz.save();
-            if (result)
+        const course = await Course.findOne({ _id: clazz.courseId });
+        const prerequisiteCourse = course.prerequisiteCourse;
+        const studyStatus = await StudyStatus.findOne({studentId: studentId});
+        const studiedCourses = studyStatus.studiedCourses;
+        
+        if(prerequisiteCourse.every(course => studiedCourses.includes(course)) || prerequisiteCourse.length == 0){
+            const registeredStudents = clazz.registeredStudents;
+            const waitingStudents = clazz.waitingStudents;
+            if (registeredStudents.includes(studentId))
                 return {
-                    errCode: 0,
-                    message: 'Register class successfully',
-                    waiting: clazz.waitingStudents,
-                    registered: clazz.registeredStudents
-                    
+                    errCode: 3,
+                    message: 'Student is already registered'
+                }
+            else if (waitingStudents.includes(studentId))
+                return {
+                    errCode: 4,
+                    message: 'Student is already in waiting list'
                 }
             else
+            if (registeredStudents.length >= clazz.maxStudents) {
                 return {
-                    errCode: 1,
-                    message: 'Register class failed'
+                    errCode: 3,
+                    message: 'Class is full'
                 }
+            }
+            else {
+                clazz.waitingStudents.push(studentId);
+                const result = await clazz.save();
+                if (result)
+                    return {
+                        errCode: 0,
+                        message: 'Register class successfully',
+                        waiting: clazz.waitingStudents,
+                        registered: clazz.registeredStudents
+                        
+                    }
+                else
+                    return {
+                        errCode: 1,
+                        message: 'Register class failed'
+                    }
+            }
+        } else {
+            return {
+                errCode: 6,
+                message: 'Not yet finish prerequisiteCourse',
+            }
         }
     }
     catch (error) {
@@ -269,6 +282,48 @@ const acceptStudentToClass = async (classId, studentId) => {
         }
     }
 }
+
+const finishCourse = async (classId, studentId) => {
+    try {
+        const clazz = await Class.findOne({ classId: classId });
+        if(!clazz)
+            return {
+                errCode: 2,
+                message: 'Class is not exists'
+            }
+        const registeredStudents = clazz.registeredStudents;
+        if(registeredStudents.includes(studentId)){
+            const studyStatus = await StudyStatus.findOne({studentId: studentId});
+            if(!studyStatus)
+                return {
+                    errCode: 2,
+                    message: 'Student is not exists'
+                }
+            
+            studyStatus.studiedCourses.push(clazz.courseId);
+            const course = await Course.findOne({ _id: clazz.courseId });
+            const credit = course.credit;
+            studyStatus.credits += Number(credit)
+            const result = await studyStatus.save();
+            if(result)
+                return {
+                    errCode: 0,
+                    message: 'Finish course successfully',
+                    data: studyStatus.studiedCourses
+                }
+            else
+                return {
+                    errCode: 1,
+                    message: 'Finish course failed'
+                }
+        }
+    } catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        }
+    }
+}
 module.exports = {
     addCourse,
     addMajor,
@@ -276,5 +331,6 @@ module.exports = {
     addClass,
     getClassByMajor,
     registerClass,
-    acceptStudentToClass
+    acceptStudentToClass,
+    finishCourse
 }

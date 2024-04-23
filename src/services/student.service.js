@@ -1,4 +1,5 @@
 const Student = require("../config/models/student.model");
+const StudyStatus = require("../config/models/study_status.model");
 import { random_bg_color } from '../ultils/random';
 import customizeUser, { hashPassword, checkPassword } from '../ultils/customizeUser';
 import mongoose from 'mongoose';
@@ -31,6 +32,18 @@ const register = async ( studentId, name, email, dateOfBirth, major) => {
         // push data to database
         const student = new Student(data);
         const result = await student.save();
+
+        // create study status
+         const studyStatus = {
+            _id: new mongoose.Types.ObjectId().toHexString(),
+            studentId: studentId,
+            studiedCourses: [],
+            currentCourses: [],
+            GPA: 0,
+            status: true
+        }   
+        const studyStatusModel = new StudyStatus(studyStatus);
+        await studyStatusModel.save();
         if (result) {
             return {
                 errCode: 0,
@@ -43,7 +56,7 @@ const register = async ( studentId, name, email, dateOfBirth, major) => {
                 errCode: 1,
                 message: 'Do not create',
             }
-        }
+        } 
     } catch (error) {
         return {
             errCode: 5,

@@ -15,6 +15,8 @@ const InitRoutesCourse = (router) => {
         .post(courseController.registerClass);
     router.route('/acceptStudentToClass')
         .put(courseController.acceptStudentToClass);
+    router.route('/finishCourse')
+        .put(courseController.finishCourse);
     return router;
 }
 
