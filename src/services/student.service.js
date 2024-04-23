@@ -39,6 +39,7 @@ const register = async ( studentId, name, email, dateOfBirth, major) => {
             studentId: studentId,
             studiedCourses: [],
             currentCourses: [],
+            failedCourses: [],
             GPA: 0,
             status: true
         }   

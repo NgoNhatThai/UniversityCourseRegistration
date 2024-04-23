@@ -283,7 +283,7 @@ const acceptStudentToClass = async (classId, studentId) => {
     }
 }
 
-const finishCourse = async (classId, studentId) => {
+const finishCourse = async (classId, studentId, point) => {
     try {
         const clazz = await Class.findOne({ classId: classId });
         if(!clazz)
@@ -303,7 +303,17 @@ const finishCourse = async (classId, studentId) => {
             studyStatus.studiedCourses.push(clazz.courseId);
             const course = await Course.findOne({ _id: clazz.courseId });
             const credit = course.credit;
+            if(point < 5){
+                studyStatus.failedCourses.push(clazz.courseId);
+                await studyStatus.save();
+                return {
+                    errCode: 6,
+                    message: 'Failed course',
+                    data: studyStatus.studiedCourses
+                }
+            }
             studyStatus.credits += Number(credit)
+            studyStatus.GPA = (studyStatus.GPA + Number(point)) / 2;
             const result = await studyStatus.save();
             if(result)
                 return {

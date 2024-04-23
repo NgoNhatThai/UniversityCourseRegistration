@@ -86,11 +86,11 @@ const acceptStudentToClass = async (req, res) => {
 }
 
 const finishCourse = async (req, res) => {
-    const {classId, studentId} = req.body;
-    if(!classId || !studentId)
+    const {classId, studentId, point} = req.body;
+    if(!classId || !studentId || !point)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.finishCourse(classId, studentId);
+        const response = await courseService.finishCourse(classId, studentId, point);
         return res.status(200).json(response);
     } catch (error) {
         next(error);

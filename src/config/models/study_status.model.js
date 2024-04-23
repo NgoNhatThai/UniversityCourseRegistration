@@ -14,6 +14,10 @@ const studyStatus =  Schema({
         type: Array,
         default: [],
     },
+    failedCourses: {
+        type: Array,
+        default: [],
+    },
     GPA: {
         type: Number,
         default: 0,
