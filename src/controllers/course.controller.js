@@ -23,11 +23,11 @@ const getAllCourses = async (req, res) => {
 }
 
 const addClass = async (req, res) => {
-    const {classId, courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room} = req.body;
-    if(!classId || !courseId || !major || !instructor || !maxStudents || !waitingStudents || !registeredStudents || !classSchedule || !room)
+    const {courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room} = req.body;
+    if(!courseId || !major || !instructor || !maxStudents || !waitingStudents || !registeredStudents || !classSchedule || !room)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.addClass(classId, courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room);
+        const response = await courseService.addClass(courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room);
         return res.status(200).json(response);
     }
     catch (error) {
@@ -47,13 +47,24 @@ const addMajor = async (req, res) => {
         next(error);
     }
 }
-
-const getClassByMajor = async (req, res) => {
+const getCourceByMajor = async (req, res) => {
     const {major} = req.body;
     if(!major)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.getClassByMajor(major);
+        const response = await courseService.getCourceByMajor(major);
+        return res.status(200).json(response);
+    }
+    catch (error) {
+        next(error);
+    }
+}
+const getClassByCourse = async (req, res) => {
+    const {course} = req.body;
+    if(!course)
+        return res.status(400).json({errCode: 1, message: 'Missing required fields'});
+    try {
+        const response = await courseService.getClassByCourse(course);
         return res.status(200).json(response);
     }
     catch (error) {
@@ -101,7 +112,8 @@ module.exports = {
     getAllCourses,
     addMajor,
     addClass,
-    getClassByMajor,
+    getCourceByMajor,
+    getClassByCourse,
     registerClass,
     acceptStudentToClass,
     finishCourse,

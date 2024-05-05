@@ -103,19 +103,19 @@ const addMajor = async (majorId, name) => {
     }
 }
 
-const addClass = async (classId, courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room) => {
+const addClass = async (courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room) => {
     try {
         // return { classId, courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room }
-        const classExists = await Course.findOne({ classId: classId });
+       
+        const _id = new mongoose.Types.ObjectId().toHexString()
+        const classExists = await Course.findOne({ _id: _id });
         if (classExists)
             return {
                 errCode: 4,
                 message: 'Class is exists, Please use new another class'
             }
-        const _id = new mongoose.Types.ObjectId().toHexString()
         const data = {
             _id: _id,
-            classId: classId,
             courseId: courseId,
             major: major,
             instructor: instructor,
@@ -126,7 +126,7 @@ const addClass = async (classId, courseId, major, instructor, maxStudents, waiti
             room: room,
             status: true
         }
-        // return data;
+       
         const clazz = new Class(data);
         const result = await clazz.save();
         if (result) {
@@ -149,10 +149,27 @@ const addClass = async (classId, courseId, major, instructor, maxStudents, waiti
         }
     }
 }
-
-const getClassByMajor = async (major) => {
+const getCourceByMajor = async (major) => {
     try {
-        const classes = await Class.find({ major: major })
+        const courses = await Course.find({ major: major })
+        if(courses){
+            return {
+                errCode: 0,
+                message: 'Get courses by major successfully',
+                data: courses,
+            }
+        }
+    } catch (error) {
+        return {
+            errCode: 1,
+            message: 'Get courses by major failed',
+        }
+    }
+    
+}
+const getClassByCourse = async (course) => {
+    try {
+        const classes = await Class.find({ courseId: course })
             .populate('courseId', 'name')
             .populate('major', 'name');
         if (classes)
@@ -168,6 +185,7 @@ const getClassByMajor = async (major) => {
         }
     }
 }
+
 
 const registerClass = async (classId, studentId) => {
     try {
@@ -339,7 +357,8 @@ module.exports = {
     addMajor,
     getAllCourses,
     addClass,
-    getClassByMajor,
+    getCourceByMajor,
+    getClassByCourse,
     registerClass,
     acceptStudentToClass,
     finishCourse

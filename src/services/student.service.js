@@ -135,8 +135,43 @@ const changePassword = async (studentId, oldPassword, newPassword) => {
         }
     }
 }
+const resetPassword = async (studentId, newPassword) => {
+    try {
+        const student = await Student.findOne({ studentId: studentId });
+        if (!student) {
+            return {
+                errCode: 2,
+                message: 'Student not found'
+            }
+        }
+        
+        const password = hashPassword(newPassword);
+        student.password = password;
+        const result = await student.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Change password success',
+                data: student
+            }
+        }
+        else {
+            return {
+                errCode: 1,
+                message: 'Do not change password',
+            }
+        }
+    }
+    catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        }
+    }
+}
 module.exports = {
     register,
     login,
-    changePassword
+    changePassword,
+    resetPassword
 }

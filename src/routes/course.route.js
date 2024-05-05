@@ -9,8 +9,10 @@ const InitRoutesCourse = (router) => {
         .post(courseController.addMajor);
     router.route('/addClass')
         .post(courseController.addClass);
-    router.route('/getClassByMajor')
-        .get(courseController.getClassByMajor);
+    router.route('/getCourceByMajor')
+        .get(courseController.getCourceByMajor);
+    router.route('/getClassByCourse')
+        .get(courseController.getClassByCourse);
     router.route('/registerClass')
         .post(courseController.registerClass);
     router.route('/acceptStudentToClass')

@@ -12,6 +12,10 @@ const course =  Schema({
         type: String,
         required: true,
     },
+    major: {
+        type: Schema.Types.ObjectId,
+        ref: 'Major',
+    },
     credit: {
         type: Number,
         required: true,

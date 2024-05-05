@@ -10,11 +10,6 @@ const clazz =  Schema({
     // Số sinh viên đã đăng ký (Registered Students)
     // Thời gian học (Class Schedule)
     _id: Schema.Types.ObjectId,
-    classId: {
-        type: Number,
-        required: true,
-        unique: true,
-    },
     courseId: {
         type: Schema.Types.ObjectId,
         ref: 'Course',
@@ -57,6 +52,27 @@ const clazz =  Schema({
             }
         },
         required: true,
+    },
+    practiceSchedule: {
+        type: 
+        {
+            //From 2 - 7 (Monday - Saturday): Sunday = 8
+            weekDay: {
+                type: Number,
+                required: true,
+            },
+            //From 1 - 14
+            start: {
+                type: Number,
+                required: true,
+            },
+            //From 2 - 15
+            end: {
+                type: Number,
+                required: true,
+            }
+        },
+        required: false,
     },
     room: {
         type: String,

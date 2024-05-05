@@ -42,9 +42,22 @@ const changePassword = async (req, res, next) => {
     }
 
 }
+const resetPassword = async (req, res, next) => { 
+    const {studentId, newPassword} = req.body;
+    if(!studentId || !newPassword)
+        return res.status(400).json({errCode: 1, message: 'Missing required fields'});
+    try {
+        const response = await studentService.resetPassword(studentId, newPassword);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
 module.exports = {
     register,
     updateStudent,
     login,
-    changePassword
+    changePassword,
+    resetPassword
 }

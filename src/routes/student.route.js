@@ -8,6 +8,8 @@ const IntRoutesStudent = (router) => {
         .get(studentController.login);
     router.route('/changePassword')
         .put(studentController.changePassword);
+    router.route('/resetPassword')
+        .put(studentController.resetPassword);
     return router;
 }
 
