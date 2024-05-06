@@ -10,6 +10,8 @@ const IntRoutesStudent = (router) => {
         .put(studentController.changePassword);
     router.route('/resetPassword')
         .put(studentController.resetPassword);
+    router.route('/getStudentStatus')
+        .get(studentController.getStudentStatus);
     return router;
 }
 

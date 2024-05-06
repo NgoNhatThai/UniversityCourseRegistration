@@ -1,10 +1,10 @@
 import studentService from '../services/student.service.js';
 const register = async (req, res, next) => {
-    const {studentId, name, email, dateOfBirth, major} = req.body;
-    if(!studentId || !name || !email || !dateOfBirth || !major)
+    const {studentId, name, email, dateOfBirth, major, gender, homeTown, schoolYear, educationLevel, clazz} = req.body;
+    if(!studentId || !name || !email || !dateOfBirth || !major || !gender || !homeTown || !schoolYear || !educationLevel || !clazz)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await studentService.register(studentId, name, email, dateOfBirth, major);
+        const response = await studentService.register(studentId, name, email, dateOfBirth, major, gender, homeTown, schoolYear, educationLevel, clazz);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -54,10 +54,22 @@ const resetPassword = async (req, res, next) => {
     }
 
 }
+const getStudentStatus = async (req, res, next) => {
+    const {studentId} = req.body;
+    if(!studentId)
+        return res.status(400).json({errCode: 1, message: 'Missing required fields'});
+    try {
+        const response = await studentService.getStudentStatus(studentId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports = {
     register,
     updateStudent,
     login,
     changePassword,
-    resetPassword
+    resetPassword,
+    getStudentStatus
 }

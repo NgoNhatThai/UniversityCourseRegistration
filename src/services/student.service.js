@@ -4,7 +4,7 @@ import { random_bg_color } from '../ultils/random';
 import customizeUser, { hashPassword, checkPassword } from '../ultils/customizeUser';
 import mongoose from 'mongoose';
 
-const register = async ( studentId, name, email, dateOfBirth, major) => {
+const register = async ( studentId, name, email, dateOfBirth, major, gender, homeTown, schoolYear, educationLevel, clazz) => {
     try {
         // check user exists;
         const userExists = await Student.findOne({ studentId: studentId });
@@ -27,6 +27,11 @@ const register = async ( studentId, name, email, dateOfBirth, major) => {
             dateOfBirth: dateOfBirth,
             major: major,
             password,
+            gender: gender,
+            homeTown: homeTown,
+            schoolYear: schoolYear,
+            educationLevel: educationLevel,
+            clazz: clazz,
             status: true
         }
         // push data to database
@@ -67,7 +72,7 @@ const register = async ( studentId, name, email, dateOfBirth, major) => {
 }
 const login = async (studentId, password) => {
     try {
-        const student = await Student.findOne({ studentId: studentId });        
+        const student = await Student.findOne({ studentId: studentId }).populate('major', 'name');        
         if (!student) {
             return {
                 errCode: 2,
@@ -169,9 +174,32 @@ const resetPassword = async (studentId, newPassword) => {
         }
     }
 }
+const getStudentStatus = async (studentId) => {
+    try {
+        const studyStatus = await StudyStatus.findOne({studentId: studentId});
+        const student = await Student.findOne({ studentId: studentId });
+        if (!studyStatus || !student) {
+            return {
+                errCode: 2,
+                message: 'Student not found'
+            }
+        } 
+        return {
+            errCode: 0,
+            message: 'Get student status success',
+            data: [student, studyStatus]
+        }
+    } catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        }
+    }
+}
 module.exports = {
     register,
     login,
     changePassword,
-    resetPassword
+    resetPassword,
+    getStudentStatus
 }

@@ -30,6 +30,20 @@ const student = Schema({
         ref: 'Major',
     },
     password: String,
+    gender :{
+        type: Boolean,
+        required: true,
+    },
+    homeTown: String,
+    schoolYear: String,
+    educationLevel: {
+        type: String,
+        enum: ['Đại học', 'Cao đẳng', 'Trung cấp', 'Thạc sĩ', 'Tiến sĩ']
+    },
+    clazz: {
+        type: String,
+        required: true,
+    },
     status: {
         type: Boolean,
         default: true,
