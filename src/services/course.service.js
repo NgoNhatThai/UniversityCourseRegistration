@@ -103,10 +103,8 @@ const addMajor = async (majorId, name) => {
     }
 }
 
-const addClass = async (courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room) => {
+const addClass = async (courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, practiceSchedule, room, semester) => {
     try {
-        // return { classId, courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room }
-       
         const _id = new mongoose.Types.ObjectId().toHexString()
         const classExists = await Course.findOne({ _id: _id });
         if (classExists)
@@ -123,10 +121,11 @@ const addClass = async (courseId, major, instructor, maxStudents, waitingStudent
             waitingStudents: waitingStudents,
             registeredStudents: registeredStudents,
             classSchedule: classSchedule,
+            practiceSchedule: practiceSchedule,
             room: room,
+            semester: semester,
             status: true
         }
-       
         const clazz = new Class(data);
         const result = await clazz.save();
         if (result) {
@@ -187,9 +186,9 @@ const getClassByCourse = async (course) => {
 }
 
 
-const registerClass = async (classId, studentId) => {
+const registerClass = async (_id, studentId) => {
     try {
-        const clazz = await Class.findOne({ classId: classId });
+        const clazz = await Class.findOne({ _id: _id });
         if (!clazz)
             return {
                 errCode: 2,
@@ -251,10 +250,31 @@ const registerClass = async (classId, studentId) => {
         }
     }
 }
-
-const acceptStudentToClass = async (classId, studentId) => {
+const checkSchedule = async (studentId, classSchedule) => {
+    const studyStatus = await StudyStatus.findOne({studentId: studentId});
+    if(!studyStatus){
+        return false;
+    }
+    const currentCourses = studyStatus.currentCourses;
+    if(currentCourses.lenght == 0){
+        return true;
+    }
+    currentCourses.forEach(course => {
+        if(course.classSchedule.weekDay == classSchedule.weekDay){
+            if(course.classSchedule.start >= classSchedule.start && course.classSchedule.start <= classSchedule.end){
+                return false;
+            }
+            if(course.classSchedule.end >= classSchedule.start && course.classSchedule.end <= classSchedule.end){
+                return false;
+            }
+        }
+    }
+    )
+    return true;
+}
+const acceptStudentToClass = async (_id, studentId) => {
     try {
-        const clazz = await Class.findOne({ _id: classId });
+        const clazz = await Class.findOne({ _id: _id });
         if (!clazz)
             return {
                 errCode: 2,
@@ -275,13 +295,18 @@ const acceptStudentToClass = async (classId, studentId) => {
             }
         else {
             if(registeredStudents.length < clazz.maxStudents){
+                if(checkSchedule(studentId, clazz.classSchedule) == false){
+                    return {    
+                        errCode: 7,
+                        message: 'Student has schedule conflict'
+                    }
+                }
                 clazz.registeredStudents.push(studentId);
                 clazz.waitingStudents.splice(index, 1);
                 const result = await clazz.save();
                 const studyStatus = await StudyStatus.findOne({studentId: studentId});
                 if(studyStatus) {
-                    const course = await Course.findOne({ _id: clazz.courseId });
-                    studyStatus.currentCourses.push(course);
+                    studyStatus.currentCourses.push(clazz);
                     await studyStatus.save()
                 } else {
                     return {
@@ -318,9 +343,9 @@ const acceptStudentToClass = async (classId, studentId) => {
     }
 }
 
-const finishCourse = async (classId, studentId, point) => {
+const finishCourse = async (_id, studentId, point) => {
     try {
-        const clazz = await Class.findOne({ classId: classId });
+        const clazz = await Class.findOne({ _id: _id });
         if(!clazz)
             return {
                 errCode: 2,
@@ -334,6 +359,7 @@ const finishCourse = async (classId, studentId, point) => {
                     errCode: 2,
                     message: 'Student is not exists'
                 };
+
             const course = await Course.findOne({ _id: clazz.courseId });
             const credit = course.credit;
             const result = false;

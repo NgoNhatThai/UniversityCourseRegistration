@@ -23,11 +23,11 @@ const getAllCourses = async (req, res) => {
 }
 
 const addClass = async (req, res) => {
-    const {courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room} = req.body;
-    if(!courseId || !major || !instructor || !maxStudents || !waitingStudents || !registeredStudents || !classSchedule || !room)
+    const {courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, practiceSchedule, room, semester} = req.body;
+    if(!courseId || !major || !instructor || !maxStudents || !waitingStudents || !registeredStudents || !classSchedule || !room || !semester || !practiceSchedule)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.addClass(courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, room);
+        const response = await courseService.addClass(courseId, major, instructor, maxStudents, waitingStudents, registeredStudents, classSchedule, practiceSchedule, room, semester);
         return res.status(200).json(response);
     }
     catch (error) {
@@ -73,11 +73,11 @@ const getClassByCourse = async (req, res) => {
 }
 
 const registerClass = async (req, res) => {
-    const {classId, studentId} = req.body;
-    if(!classId || !studentId)
+    const {_id, studentId} = req.body;
+    if(!_id || !studentId)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.registerClass(classId, studentId);
+        const response = await courseService.registerClass(_id, studentId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -85,11 +85,11 @@ const registerClass = async (req, res) => {
 }
 
 const acceptStudentToClass = async (req, res) => {
-    const {classId, studentId} = req.body;
-    if(!classId || !studentId)
+    const {_id, studentId} = req.body;
+    if(!_id || !studentId)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.acceptStudentToClass(classId, studentId);
+        const response = await courseService.acceptStudentToClass(_id, studentId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -97,11 +97,11 @@ const acceptStudentToClass = async (req, res) => {
 }
 
 const finishCourse = async (req, res) => {
-    const {classId, studentId, point} = req.body;
-    if(!classId || !studentId || !point)
+    const {_id, studentId, point} = req.body;
+    if(!_id || !studentId || !point)
         return res.status(400).json({errCode: 1, message: 'Missing required fields'});
     try {
-        const response = await courseService.finishCourse(classId, studentId, point);
+        const response = await courseService.finishCourse(_id, studentId, point);
         return res.status(200).json(response);
     } catch (error) {
         next(error);

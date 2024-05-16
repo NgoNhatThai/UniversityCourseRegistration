@@ -54,27 +54,13 @@ const clazz =  Schema({
         required: true,
     },
     practiceSchedule: {
-        type: 
-        {
-            //From 2 - 7 (Monday - Saturday): Sunday = 8
-            weekDay: {
-                type: Number,
-                required: true,
-            },
-            //From 1 - 14
-            start: {
-                type: Number,
-                required: true,
-            },
-            //From 2 - 15
-            end: {
-                type: Number,
-                required: true,
-            }
-        },
-        required: false,
+        type: Array
     },
     room: {
+        type: String,
+        required: true,
+    },
+    semester: {
         type: String,
         required: true,
     },
