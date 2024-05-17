@@ -196,10 +196,33 @@ const getStudentStatus = async (studentId) => {
         }
     }
 }
+const getStatus = async (studentId) => {
+    try {
+        const studyStatus = await StudyStatus.findOne({studentId: studentId});
+        if (!studyStatus) {
+            return {
+                errCode: 2,
+                message: 'Student not found'
+            }
+        }   
+        return {
+            errCode: 0,
+            message: 'Get student status success',
+            data: studyStatus
+        }
+    }
+    catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        }
+    }
+}
 module.exports = {
     register,
     login,
     changePassword,
     resetPassword,
-    getStudentStatus
+    getStudentStatus,
+    getStatus
 }

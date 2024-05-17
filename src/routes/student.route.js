@@ -12,6 +12,9 @@ const IntRoutesStudent = (router) => {
         .put(studentController.resetPassword);
     router.route('/getStudentStatus')
         .get(studentController.getStudentStatus);
+    router.route('/getStatus')
+        .get(studentController.getStatus);
+
     return router;
 }
 
