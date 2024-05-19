@@ -76,6 +76,7 @@ const getStatus = async (req, res, next) => {
         next(error);
     }
 }
+
 module.exports = {
     register,
     updateStudent,
@@ -83,5 +84,5 @@ module.exports = {
     changePassword,
     resetPassword,
     getStudentStatus,
-    getStatus
+    getStatus,
 }

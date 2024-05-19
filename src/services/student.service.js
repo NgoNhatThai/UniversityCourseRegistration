@@ -218,11 +218,13 @@ const getStatus = async (studentId) => {
         }
     }
 }
+
+
 module.exports = {
     register,
     login,
     changePassword,
     resetPassword,
     getStudentStatus,
-    getStatus
+    getStatus,
 }
