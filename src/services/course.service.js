@@ -359,20 +359,28 @@ const finishCourse = async (_id, studentId, point) => {
                     errCode: 2,
                     message: 'Student is not exists'
                 };
-
             const course = await Course.findOne({ _id: clazz.courseId });
             const credit = course.credit;
-            const result = false;
+            //return {clazz, studyStatus, course, credit, result}
             if(point >= 5) {
                 const studyResult = {
                     course: course,
                     point: point
                 }
                 studyStatus.studiedCourses.push(studyResult);
-                studyStatus.credits += Number(credit)
+                studyStatus.credit += Number(credit)
                 studyStatus.GPA = (studyStatus.GPA + Number(point)) / 2;
-                result = await studyStatus.save();
-
+                studyStatus.currentCourses = studyStatus.currentCourses.filter(course => course._id != _id);
+                const result = await studyStatus.save();
+                if(result)
+                return {
+                    errCode: 0,
+                    message: 'Finish course successfully',
+                    data: { 
+                        result : studyStatus.studiedCourses, 
+                        delete_current: studyStatus.currentCourses,
+                    }
+                }
             }
             else {
                 const studyResult = {
@@ -384,21 +392,14 @@ const finishCourse = async (_id, studentId, point) => {
                 return {
                     errCode: 6,
                     message: 'Failed course',
-                    data: studyStatus.studiedCourses
+                    data: studyStatus.failedCourses
                 }
             }
-            
-            if(result)
-                return {
-                    errCode: 0,
-                    message: 'Finish course successfully',
-                    data: studyStatus.studiedCourses
-                }
-            else
-                return {
-                    errCode: 1,
-                    message: 'Finish course failed'
-                }
+        } else {
+            return {
+                errCode: 3,
+                message: 'Student is not in class'
+            }
         }
     } catch (error) {
         return {

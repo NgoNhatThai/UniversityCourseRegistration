@@ -76,6 +76,17 @@ const getStatus = async (req, res, next) => {
         next(error);
     }
 }
+const getStudyResult = async (req, res, next) => {
+    const {studentId} = req.body;
+    if(!studentId)
+        return res.status(400).json({errCode: 1, message: 'Missing required fields'});
+    try {
+        const response = await studentService.getStudyResult(studentId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports = {
     register,
     updateStudent,
@@ -83,5 +94,6 @@ module.exports = {
     changePassword,
     resetPassword,
     getStudentStatus,
-    getStatus
+    getStatus,
+    getStudyResult
 }

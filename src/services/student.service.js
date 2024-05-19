@@ -1,5 +1,6 @@
 const Student = require("../config/models/student.model");
 const StudyStatus = require("../config/models/study_status.model");
+const getNameCourseById = require("./course.service");
 import { random_bg_color } from '../ultils/random';
 import customizeUser, { hashPassword, checkPassword } from '../ultils/customizeUser';
 import mongoose from 'mongoose';
@@ -46,6 +47,7 @@ const register = async ( studentId, name, email, dateOfBirth, major, gender, hom
             currentCourses: [],
             failedCourses: [],
             GPA: 0,
+            credit: 0,
             status: true
         }   
         const studyStatusModel = new StudyStatus(studyStatus);
@@ -218,11 +220,81 @@ const getStatus = async (studentId) => {
         }
     }
 }
+const convertGrade = (grade10Scale) =>{
+    let gradeLetter;
+    
+    if (grade10Scale >= 8.5) {
+        gradeLetter = 'A';
+    } else if (grade10Scale >= 7) {
+        gradeLetter = 'B';
+    } else if (grade10Scale >= 5.5) {
+        gradeLetter = 'C';
+    } else if (grade10Scale >= 4) {
+        gradeLetter = 'D';
+    } else {
+        gradeLetter = 'F';
+    }
+
+    return gradeLetter;
+}
+const evaluateAcademicPerformance=(score) =>{
+    let performance;
+    
+    if (score >= 8.5) {
+        performance = 'Giỏi';
+    } else if (score >= 7) {
+        performance = 'Khá';
+    } else if (score >= 5.5) {
+        performance = 'Trung bình';
+    } else if (score >= 4) {
+        performance = 'Yếu';
+    } else {
+        performance = 'Kém';
+    }
+
+    return performance;
+}
+const getStudyResult = async (studentId) => {
+    try {
+        const studyStatus = await StudyStatus.findOne({studentId: studentId});  
+        if (!studyStatus) {
+            return {
+                errCode: 2,
+                message: 'Student not found'
+            }
+        }
+        const studiedCourses = studyStatus.studiedCourses;
+        const studyResultPromises = studiedCourses.map(async (result) => {
+            return {
+                _id: course._id,
+                name: course.name,
+                credit: course.credit,
+                point_10: point,
+                point_4: (point/10)*4,
+                point_char: convertGrade(point),
+                academic_performance: evaluateAcademicPerformance(point)
+            };
+        });
+        const studyResult = await Promise.all(studyResultPromises);
+        return {
+            errCode: 0,
+            message: 'Get study result successfully',
+            data: studyResult
+        };
+    }
+    catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        }
+    }
+}
 module.exports = {
     register,
     login,
     changePassword,
     resetPassword,
     getStudentStatus,
-    getStatus
+    getStatus,
+    getStudyResult
 }

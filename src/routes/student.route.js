@@ -14,6 +14,8 @@ const IntRoutesStudent = (router) => {
         .get(studentController.getStudentStatus);
     router.route('/getStatus')
         .get(studentController.getStatus);
+    router.route('/getStudyResult')
+        .get(studentController.getStudyResult);
 
     return router;
 }
