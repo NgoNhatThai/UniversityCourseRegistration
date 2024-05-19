@@ -122,7 +122,9 @@ const sendOTP = async (req, res) => {
         });
     } catch (error) {
         console.log("Error:", error);
-        return res.status(400).json({ error: "Invalid Details", error });
+        return res.status(400).json({ 
+            errCode: 1,
+            error: "Invalid Details", error });
     }
 };
 
@@ -138,16 +140,19 @@ const verifyOTP = async (req,res) => {
         const otpverification = await userotp.findOne({email:email});
 
         if(otpverification.otp === otp){
-            const preuser = await users.findOne({email:email});
            res.status(200).json({
             errCode: 0,
             message:"Verify OTP Success"});
 
         }else{
-            res.status(400).json({error:"Invalid Otp"})
+            res.status(400).json({
+            errCode: 1,
+            error:"Invalid Otp"})
         }
     } catch (error) {
-        res.status(400).json({ error: "Invalid Details", error })
+        res.status(400).json({
+            errCode: 2, 
+            error: "Invalid Details", error })
     }
 }
 
