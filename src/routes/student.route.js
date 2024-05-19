@@ -5,7 +5,7 @@ const IntRoutesStudent = (router) => {
         .post(studentController.register)
         .put(studentController.updateStudent);
     router.route('/login')  
-        .get(studentController.login);
+        .post(studentController.login);
     router.route('/changePassword')
         .put(studentController.changePassword);
     router.route('/resetPassword')

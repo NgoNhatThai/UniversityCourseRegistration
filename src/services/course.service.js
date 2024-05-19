@@ -421,6 +421,19 @@ const getNameCourseById = async (courseId) => {
     }
 };
 
+const getInfoCourseById = async (courseId) => {
+    try {
+        const course = await Course.findOne({ _id: courseId });
+        console.log("course name: ", course.name);
+        return course;
+    } catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        };
+    }
+};
+
 const getSchedules = async (studentId) => {
     try {
         const studyStatus = await StudyStatus.findOne({ studentId: studentId });
@@ -460,33 +473,52 @@ const getSchedules = async (studentId) => {
         };
     }
 };
-// const getPractiseSchedules = async (studentId) => {
-//     try {
-//         const studyStatus = await StudyStatus.findOne({ studentId: studentId });    
-//         if (studyStatus) {
-//             const classes = studyStatus.currentCourses;
-//             const practiceSchedules = classes.practiceSchedule;
-//             const schedules = await Promise.all(schedulesPromises);
 
-//             return {
-//                 errCode: 0,
-//                 message: 'Get schedules successfully',
-//                 data: schedules
-//             };
-//         } else {
-//             return {
-//                 errCode: 4,
-//                 message: 'Study status not found!'
-//             };
-//         }
-//     }
-//     catch (error) {
-//         return {
-//             errCode: 5,
-//             message: 'Some errors occur, please try again!'
-//         };
-//     }
-// }
+const getRegisteredCourse = async (studentId) => {
+    try {
+        const studyStatus = await StudyStatus.findOne({ studentId: studentId });
+        if (studyStatus) {
+            const classes = studyStatus.currentCourses;
+            const schedulesPromises = classes.map(async (course) => {
+                const courseName = await getInfoCourseById(course.courseId);
+                return {
+                    _id: course._id,
+                    instructor: course.instructor,
+                    room: course.room,
+                    name: courseName.name,
+                    weekDay: course.classSchedule.weekDay,
+                    start: course.classSchedule.start,
+                    end: course.classSchedule.end,
+                    semester: course.semester,
+                    credit: courseName.credit,
+                    type: 'theory',
+                    createdAt: course.createdAt,
+                    status: course.status,
+                    fee: "2360000",
+                    statusPayment: false,
+                };
+            });
+            const schedules = await Promise.all(schedulesPromises);
+            
+            return {
+                errCode: 0,
+                message: 'Get schedules successfully',
+                data: schedules
+            };
+        } else {
+            return {
+                errCode: 4,
+                message: 'Study status not found!'
+            };
+        }
+    } catch (error) {
+        return {
+            errCode: 5,
+            message: 'Some errors occur, please try again!'
+        };
+    }
+};
+
 module.exports = {
     addCourse,
     addMajor,
@@ -497,5 +529,6 @@ module.exports = {
     registerClass,
     acceptStudentToClass,
     finishCourse,
-    getSchedules
+    getSchedules,
+    getRegisteredCourse
 }

@@ -10,9 +10,9 @@ const InitRoutesCourse = (router) => {
     router.route('/addClass')
         .post(courseController.addClass);
     router.route('/getCourceByMajor')
-        .get(courseController.getCourceByMajor);
+        .post(courseController.getCourceByMajor);
     router.route('/getClassByCourse')
-        .get(courseController.getClassByCourse);
+        .post(courseController.getClassByCourse);
     router.route('/registerClass')
         .post(courseController.registerClass);
     router.route('/acceptStudentToClass')
@@ -20,7 +20,9 @@ const InitRoutesCourse = (router) => {
     router.route('/finishCourse')
         .put(courseController.finishCourse);
     router.route('/getSchedules')
-        .get(courseController.getSchedules);
+        .post(courseController.getSchedules);
+    router.route('/getRegisteredCourse')
+        .post(courseController.getRegisteredCourse);
     return router;
 }
 
