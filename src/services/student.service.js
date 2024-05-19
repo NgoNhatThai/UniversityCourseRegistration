@@ -176,6 +176,21 @@ const resetPassword = async (studentId, newPassword) => {
         }
     }
 }
+const getStudentById = async (studentId) => {
+    try {
+        const student = await Student.findOne({ studentId: studentId });
+        if (!student) {
+            return {
+                errCode: 2,
+                message: 'Student not found'
+            }
+        }
+        return student;
+    }
+    catch (error) {
+        return null;
+    }
+}
 const getStudentStatus = async (studentId) => {
     try {
         const studyStatus = await StudyStatus.findOne({studentId: studentId});
@@ -296,5 +311,6 @@ module.exports = {
     resetPassword,
     getStudentStatus,
     getStatus,
-    getStudyResult
+    getStudyResult,
+    getStudentById
 }

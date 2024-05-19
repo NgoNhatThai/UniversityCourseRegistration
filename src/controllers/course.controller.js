@@ -130,7 +130,25 @@ const getRegisteredCourse = async (req, res) => {
         next(error);
     }
 }
-
+const getAllClasses = async (req, res) => {
+    try {
+        const response = await courseService.getAllClasses();
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+const getWaitingList = async (req, res) => {
+    const {_id} = req.body;
+    if(!_id)
+        return res.status(400).json({errCode: 1, message: 'Missing required fields'});
+    try {
+        const response = await courseService.getWaitingList(_id);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports = {
     addCourse,
     getAllCourses,
@@ -142,5 +160,7 @@ module.exports = {
     acceptStudentToClass,
     finishCourse,
     getSchedules,
-    getRegisteredCourse
+    getRegisteredCourse,
+    getAllClasses,
+    getWaitingList
 }

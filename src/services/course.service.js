@@ -3,6 +3,7 @@ const Major = require("../config/models/major.model");
 const Class = require("../config/models/class.model");
 const StudyStatus = require("../config/models/study_status.model");
 import mongoose from 'mongoose';
+import Student from '../config/models/student.model';
 
 const addCourse = async (courseId, name, credit, prerequisiteCourse) => {
     try {
@@ -518,7 +519,65 @@ const getRegisteredCourse = async (studentId) => {
         };
     }
 };
-
+const getAllClasses = async () => {
+    try {
+        const classes = await Class.find();
+        if (classes)
+            return {
+                errCode: 0,
+                message: 'Get all classes successfully',
+                data: classes,
+            }
+    } catch (error) {
+        return {
+            errCode: 1,
+            message: 'Get all classes failed',
+        }
+    }
+}
+const getStudentById = async (studentId) => {
+    try {
+        const student = await Student.findOne({ studentId: studentId });
+        if (!student) {
+            return {
+                errCode: 2,
+                message: 'Student not found'
+            }
+        }
+        return student;
+    }
+    catch (error) {
+        return null;
+    }
+}
+const getWaitingList = async (_id) => {
+    try {
+        const clazz = await Class.findOne({ _id: _id });
+        if (!clazz)
+            return {
+                errCode: 2,
+                message: 'Class is not exists',
+            }
+        const waitingList = clazz.waitingStudents;
+        const waitingListPromises = waitingList.map(async (record) => {
+            return {
+                studentId: record,
+                studentInfo: await getStudentById(record),
+            };
+        });
+        const waitingStudents = await Promise.all(waitingListPromises);
+        return {
+            errCode: 0,
+            message: 'Get waiting list successfully',
+            data: waitingStudents,
+        }
+    } catch (error) {
+        return {
+            errCode: 1,
+            message: 'Get waiting list failed',
+        }
+    }
+}
 module.exports = {
     addCourse,
     addMajor,
@@ -530,5 +589,7 @@ module.exports = {
     acceptStudentToClass,
     finishCourse,
     getSchedules,
-    getRegisteredCourse
+    getRegisteredCourse,
+    getAllClasses,
+    getWaitingList
 }

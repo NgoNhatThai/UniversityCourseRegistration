@@ -23,6 +23,10 @@ const InitRoutesCourse = (router) => {
         .post(courseController.getSchedules);
     router.route('/getRegisteredCourse')
         .post(courseController.getRegisteredCourse);
+    router.route('/getAllClasses')
+        .get(courseController.getAllClasses);
+    router.route('/getWaitingList')
+        .get(courseController.getWaitingList);
     return router;
 }
 
