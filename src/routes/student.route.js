@@ -14,7 +14,10 @@ const IntRoutesStudent = (router) => {
         .get(studentController.getStudentStatus);
     router.route('/getStatus')
         .get(studentController.getStatus);
-
+    router.route('/sendOTP')
+        .post(studentController.sendOTP);
+    router.route('/verifyOTP')
+        .post(studentController.verifyOTP);
     return router;
 }
 
