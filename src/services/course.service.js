@@ -500,7 +500,6 @@ const getRegisteredCourse = async (studentId) => {
                 };
             });
             const schedules = await Promise.all(schedulesPromises);
-            
             return {
                 errCode: 0,
                 message: 'Get schedules successfully',

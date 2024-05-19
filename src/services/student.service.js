@@ -266,13 +266,13 @@ const getStudyResult = async (studentId) => {
         const studiedCourses = studyStatus.studiedCourses;
         const studyResultPromises = studiedCourses.map(async (result) => {
             return {
-                _id: course._id,
-                name: course.name,
-                credit: course.credit,
-                point_10: point,
-                point_4: (point/10)*4,
-                point_char: convertGrade(point),
-                academic_performance: evaluateAcademicPerformance(point)
+                _id: result?.course?._id,
+                name: result?.course?.name,
+                credit: result?.course?.credit,
+                point_10: result?.point,
+                point_4: (result?.point/10)*4,
+                point_char: convertGrade(result?.point),
+                academic_performance: evaluateAcademicPerformance(result?.point)
             };
         });
         const studyResult = await Promise.all(studyResultPromises);
